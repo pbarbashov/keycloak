@@ -115,8 +115,9 @@ public class UserStorageManager extends AbstractStorageManager<UserStorageProvid
 
         UserModel validated = importedUserValidation.validate(realm, user);
         if (validated == null) {
-            deleteInvalidUser(realm, user);
-            return null;
+            logger.debugf("User '%s' from federation link '%s' is not validated", user.getUsername(),
+                    user.getFederationLink());
+            return user;
         } else {
             return validated;
         }

@@ -21,6 +21,7 @@ import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.ModelDuplicateException;
 import org.keycloak.models.ModelException;
+import org.keycloak.models.UserModel;
 import org.keycloak.storage.ldap.LDAPStorageProvider;
 import org.keycloak.storage.ldap.idm.model.LDAPObject;
 import org.keycloak.storage.ldap.idm.query.Condition;
@@ -180,9 +181,17 @@ public class LDAPQuery implements AutoCloseable {
     }
 
     public LDAPObject getFirstResult() {
+        return getFirstResult(null);
+    }
+
+    public LDAPObject getFirstResult(UserModel userLocal) {
         List<LDAPObject> results = getResultList();
 
         if (results.isEmpty()) {
+            if (null != userLocal) {
+                logger.debugf("List of LDAPObject for user '%s' from federation link '%s' is empty!", userLocal.getUsername()
+                        , userLocal.getFederationLink());
+            }
             return null;
         } else if (results.size() == 1) {
             return results.get(0);

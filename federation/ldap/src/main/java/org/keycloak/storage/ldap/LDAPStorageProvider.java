@@ -819,7 +819,11 @@ public class LDAPStorageProvider implements UserStorageProvider,
     }
 
     public LDAPObject loadLDAPUserByUuid(RealmModel realm, String uuid) {
-        if(uuid == null){
+        return loadLDAPUserByUuid(realm, uuid, null);
+    }
+
+    public LDAPObject loadLDAPUserByUuid(RealmModel realm, String uuid, UserModel userLocal) {
+        if (uuid == null) {
             return null;
         }
         try (LDAPQuery ldapQuery = LDAPUtils.createQueryForUserSearch(this, realm)) {
@@ -829,7 +833,7 @@ public class LDAPStorageProvider implements UserStorageProvider,
             Condition usernameCondition = conditionsBuilder.equal(uuidLDAPAttributeName, uuid, EscapeStrategy.DEFAULT);
             ldapQuery.addWhereCondition(usernameCondition);
 
-            return ldapQuery.getFirstResult();
+            return (null == userLocal) ? ldapQuery.getFirstResult() : ldapQuery.getFirstResult(userLocal);
         }
     }
 
